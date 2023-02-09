@@ -53,4 +53,4 @@ function buscarImagenes(termino) {
 
 function mostrarImagenes(imagenes) {
     console.log(imagenes);
-}
+}  
