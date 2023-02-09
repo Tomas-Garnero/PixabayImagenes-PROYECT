@@ -1,9 +1,11 @@
 const resultado = document.querySelector("#resultado");
 const formulario = document.querySelector("#formulario");
+const paginacionDiv = document.querySelector("#paginacion");
 
 const registrosPorPagina = 40;
 let totalPaginas;
 let iterador;
+let paginaActual = 1;
 
 window.onload = () => {
     formulario.addEventListener("submit", validarFormulario);
@@ -42,10 +44,12 @@ function mostrarAlerta(mensaje) {
     }   
 }
 
-function buscarImagenes(termino) {
+function buscarImagenes() {
+
+    const termino = document.querySelector("#termino").value;
     
     const key = "33515490-1d720cad3d96e05847956fbb0";
-    const url = `https://pixabay.com/api/?key=${key}&q=${termino}&per_page=100`;
+    const url = `https://pixabay.com/api/?key=${key}&q=${termino}&per_page=${registrosPorPagina}&page=${paginaActual}`;
     // console.log(url);
 
     fetch(url)
@@ -59,7 +63,7 @@ function buscarImagenes(termino) {
 
 // Generador que va a registrar la cantidad de elementos de acuerdo a las paginas
 function *crearPaginador(total) {
-    for(let i = 1; i >= total; i++) {
+    for(let i = 1; i <= total; i++) {
         yield i;
     }
 }
@@ -95,10 +99,36 @@ function mostrarImagenes(imagenes) {
             `;
     })
 
+    // Limpiar el paginador previo
+    while(paginacionDiv.firstChild) {
+        paginacionDiv.removeChild(paginacionDiv.firstChild);
+    }
+
+    // Generamos un nuevo paginador
     imprimirPaginador();
 }  
 
 function imprimirPaginador() {
     iterador = crearPaginador(totalPaginas);
     // console.log(iterador);
+
+    while(true) {
+        const {value, done} = iterador.next();
+        if(done) return;
+
+        // Caso contrario, genera un boton por cada elemento en el generador
+        const boton = document.createElement("a");
+        boton.href = "#";
+        boton.dataset.pagina = value;
+        boton.textContent = value;
+        boton.classList.add("siguiente", "bg-yellow-400", "px-4", "py-1", "mr-2", "font-bold", "mb-4", "rounded");
+
+        boton.onclick = () => {
+            paginaActual = value;
+
+            buscarImagenes();
+        }
+
+        paginacionDiv.appendChild(boton);
+    }
 }
