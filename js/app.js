@@ -33,5 +33,5 @@ function mostrarAlerta(mensaje) {
         setTimeout(() => {
             alerta.remove();
         }, 3000);
-    }
+    }   
 }
